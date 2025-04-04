@@ -5,6 +5,7 @@
 
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "Character/AuraUnit.h"
 #include "Net/UnrealNetwork.h"
 
 AAuraPlayerState::AAuraPlayerState()
@@ -32,6 +33,26 @@ UAbilitySystemComponent* AAuraPlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
+
+//My added features
+
+void AAuraPlayerState::SetSelectedUnit(AAuraUnit* NewUnit)
+{
+	if (HasAuthority())
+	{
+		SelectedUnit = NewUnit;
+		UE_LOG(LogTemp, Warning, TEXT("Selected Unit: %s"), *GetNameSafe(SelectedUnit));
+	}
+}
+
+void AAuraPlayerState::OnRep_SelectedUnit()
+{
+	//write a debug message on screen of the new selected unit
+
+	UE_LOG(LogTemp, Warning, TEXT("Client Selected Unit: %s"), *SelectedUnit->GetName());
+}
+
+//End my added features
 
 void AAuraPlayerState::AddToXP(int32 InXP)
 {
@@ -68,6 +89,7 @@ void AAuraPlayerState::SetSpellPoints(int32 InPoints)
 	SpellPoints = InPoints;
 	OnSpellPointsChangedDelegate.Broadcast(SpellPoints);
 }
+
 
 void AAuraPlayerState::OnRep_Level(int32 OldLevel)
 {
